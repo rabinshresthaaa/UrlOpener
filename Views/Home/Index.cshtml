@@ -1,8 +1,42 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "URL Opener";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h2>Open URLs with Delay</h2>
+
+<form id="urlForm" onsubmit="startOpening(event)">
+    <label>Paste URLs (one per line):</label><br />
+    <textarea id="urls" rows="10" style="width:400px"></textarea><br /><br />
+
+    <label>Delay between each URL (seconds):</label><br />
+    <input id="delay" type="number" value="2" min="0" /><br /><br />
+
+    <button type="submit">Start</button>
+</form>
+
+<script>
+    async function startOpening(e) {
+        e.preventDefault();
+
+        const lines = document
+            .getElementById("urls")
+            .value
+            .split("\n")
+            .map(x => x.trim())
+            .filter(x => x.length > 0);
+
+        let delay = parseFloat(document.getElementById("delay").value) * 1000;
+
+        for (let url of lines) {
+            if (!url.startsWith("http")) {
+                url = "https://" + url;
+            }
+
+            window.open(url, "_blank");
+
+            if (delay > 0) {
+                await new Promise(r => setTimeout(r, delay));
+            }
+        }
+    }
+</script>
