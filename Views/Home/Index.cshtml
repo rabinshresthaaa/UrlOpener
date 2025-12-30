@@ -1,42 +1,87 @@
 ﻿@{
-    ViewData["Title"] = "URL Opener";
+    ViewBag.Title = "Open URLs with Delay";
 }
 
-<h2>Open URLs with Delay</h2>
+<div class="bg-white border rounded-2xl shadow-sm p-8">
 
-<form id="urlForm" onsubmit="startOpening(event)">
-    <label>Paste URLs (one per line):</label><br />
-    <textarea id="urls" rows="10" style="width:400px"></textarea><br /><br />
+    <p class="text-gray-500 mb-6">
+        Paste your links below and set the delay interval.
+    </p>
 
-    <label>Delay between each URL (seconds):</label><br />
-    <input id="delay" type="number" value="2" min="0" /><br /><br />
+    <!-- URL INPUT -->
+    <label class="font-medium mb-2 block">
+        Paste URLs (one per line):
+    </label>
 
-    <button type="submit">Start</button>
-</form>
+    <div class="relative">
+        <textarea id="urlInput"
+                  rows="8"
+                  class="w-full border rounded-xl p-3 resize-none
+                         focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="google.com&#10;youtube.com&#10;example.org"></textarea>
 
-<script>
-    async function startOpening(e) {
-        e.preventDefault();
+        <span id="urlCount"
+              class="absolute bottom-2 right-3 text-sm text-gray-500">
+            0 URLs
+        </span>
+    </div>
 
-        const lines = document
-            .getElementById("urls")
-            .value
-            .split("\n")
-            .map(x => x.trim())
-            .filter(x => x.length > 0);
+    <!-- DELAY INPUT -->
+    <label class="font-medium mt-6 mb-2 block">
+        Delay between each URL (seconds):
+    </label>
 
-        let delay = parseFloat(document.getElementById("delay").value) * 1000;
+    <input id="delayInput"
+           type="number"
+           min="0"
+           value="0"
+           class="w-full border rounded-xl p-3
+                  focus:ring-2 focus:ring-blue-500 outline-none">
 
-        for (let url of lines) {
-            if (!url.startsWith("http")) {
-                url = "https://" + url;
+    <!-- BUTTON -->
+    <button id="startBtn"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white
+                   font-medium rounded-xl py-3 mt-8 transition">
+        Start Opening
+    </button>
+
+</div>
+
+@section Scripts {
+    <script>
+        /* ---- URL Counter ---- */
+        const urlInput = document.getElementById("urlInput");
+        const urlCount = document.getElementById("urlCount");
+
+        urlInput.addEventListener("input", () => {
+            const count = urlInput.value
+                .split("\n")
+                .map(x => x.trim())
+                .filter(x => x).length;
+
+            urlCount.textContent = count + " URLs";
+        });
+
+        /* ---- URL Opener ---- */
+        document.getElementById("startBtn").addEventListener("click", async () => {
+
+            const urls = urlInput.value
+                .split("\n")
+                .map(x => x.trim())
+                .filter(x => x);
+
+            const delay = Math.max(1, parseInt(delayInput.value)) * 1000;
+
+            for (let i = 0; i < urls.length; i++) {
+
+                let url = urls[i];
+                if (!url.startsWith("http")) url = "https://" + url;
+
+                window.open(url, "_blank");
+
+                if (i < urls.length - 1)
+                    await new Promise(r => setTimeout(r, delay));
             }
-
-            window.open(url, "_blank");
-
-            if (delay > 0) {
-                await new Promise(r => setTimeout(r, delay));
-            }
-        }
-    }
-</script>
+        });
+    </script>
+}
