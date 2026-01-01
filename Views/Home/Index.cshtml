@@ -1,87 +1,97 @@
 ﻿@{
-    ViewBag.Title = "Open URLs with Delay";
+    ViewData["Title"] = "UrlOpener";
 }
 
-<div class="bg-white border rounded-2xl shadow-sm p-8">
+<div class="max-w-3xl w-full">
 
-    <p class="text-gray-500 mb-6">
-        Paste your links below and set the delay interval.
-    </p>
+    <div class="bg-white rounded-2xl shadow-sm border p-10">
 
-    <!-- URL INPUT -->
-    <label class="font-medium mb-2 block">
-        Paste URLs (one per line):
-    </label>
+        <!-- Title -->
+        <h1 class="text-3xl font-semibold text-center text-gray-900">
+            Open URLs with Delay
+        </h1>
 
-    <div class="relative">
-        <textarea id="urlInput"
-                  rows="8"
-                  class="w-full border rounded-xl p-3 resize-none
-                         focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="google.com&#10;youtube.com&#10;example.org"></textarea>
+        <p class="text-center mt-2 text-gray-500">
+            Paste your URLs below and open them automatically with a configurable timed delay.
+        </p>
 
-        <span id="urlCount"
-              class="absolute bottom-2 right-3 text-sm text-gray-500">
-            0 URLs
-        </span>
+
+        <!-- FORM -->
+        <form class="mt-8 space-y-6" onsubmit="startOpening(event)">
+
+            <!-- Textarea -->
+            <div>
+                <label class="text-sm font-medium text-gray-700">
+                    Paste URLs
+                    <span class="text-gray-400 text-xs">(one per line)</span>
+                </label>
+
+                <textarea id="urls"
+                          rows="7"
+                          class="mt-2 w-full rounded-xl border px-4 py-3 text-gray-700 focus:ring-2 focus:ring-indigo-300 outline-none"
+                          placeholder="google.com&#10;youtube.com&#10;example.org"></textarea>
+            </div>
+
+
+            <!-- Delay -->
+            <div class="bg-gray-50 border rounded-xl p-5 flex items-center justify-between">
+
+                <div>
+                    <div class="font-medium text-gray-800">
+                        Delay Duration
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        Seconds between opening each tab
+                    </div>
+                </div>
+
+                <input id="delay"
+                       type="number"
+                       value="1"
+                       min="0"
+                       class="w-20 text-center border rounded-xl py-2 focus:ring-2 focus:ring-indigo-300 outline-none" />
+            </div>
+
+
+            <!-- Button -->
+            <button type="submit"
+                    class="w-full bg-indigo-400 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-sm transition">
+                Start Opening
+            </button>
+
+        </form>
+
     </div>
 
-    <!-- DELAY INPUT -->
-    <label class="font-medium mt-6 mb-2 block">
-        Delay between each URL (seconds):
-    </label>
 
-    <input id="delayInput"
-           type="number"
-           min="0"
-           value="0"
-           class="w-full border rounded-xl p-3
-                  focus:ring-2 focus:ring-blue-500 outline-none">
-
-    <!-- BUTTON -->
-    <button id="startBtn"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white
-                   font-medium rounded-xl py-3 mt-8 transition">
-        Start Opening
-    </button>
+    <!-- Footer Notice -->
+    <div class="text-center text-gray-500 text-sm mt-6">
+        ⚠ You may need to allow pop-ups for this website in your browser settings.
+    </div>
 
 </div>
 
-@section Scripts {
-    <script>
-        /* ---- URL Counter ---- */
-        const urlInput = document.getElementById("urlInput");
-        const urlCount = document.getElementById("urlCount");
 
-        urlInput.addEventListener("input", () => {
-            const count = urlInput.value
-                .split("\n")
-                .map(x => x.trim())
-                .filter(x => x).length;
+<script>
+    async function startOpening(e) {
+        e.preventDefault();
 
-            urlCount.textContent = count + " URLs";
-        });
+        const urls = document.getElementById("urls")
+            .value.split("\n")
+            .map(x => x.trim())
+            .filter(x => x.length > 0);
 
-        /* ---- URL Opener ---- */
-        document.getElementById("startBtn").addEventListener("click", async () => {
+        let delay = parseFloat(document.getElementById("delay").value) * 1000;
 
-            const urls = urlInput.value
-                .split("\n")
-                .map(x => x.trim())
-                .filter(x => x);
+        for (let url of urls) {
 
-            const delay = Math.max(1, parseInt(delayInput.value)) * 1000;
+            if (!url.startsWith("http"))
+                url = "https://" + url;
 
-            for (let i = 0; i < urls.length; i++) {
+            window.open(url, "_blank");
 
-                let url = urls[i];
-                if (!url.startsWith("http")) url = "https://" + url;
-
-                window.open(url, "_blank");
-
-                if (i < urls.length - 1)
-                    await new Promise(r => setTimeout(r, delay));
-            }
-        });
-    </script>
-}
+            if (delay > 0)
+                await new Promise(r => setTimeout(r, delay));
+        }
+    }
+</script>

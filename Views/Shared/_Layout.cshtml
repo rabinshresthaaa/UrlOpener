@@ -3,33 +3,50 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewBag.Title - UrlOpener</title>
+    <title>@ViewData["Title"]</title>
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="icon" href="data:,">
 </head>
 
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-[#f6f8fc] min-h-screen flex flex-col">
 
-    <!-- HEADER -->
-    <header class="bg-white border-b">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-xl font-semibold">
-                UrlOpener
+    <!-- Header -->
+    <header class="w-full border-b bg-white">
+        <div class="max-w-5xl mx-auto px-6 py-4">
+            <div class="flex items-center gap-3">
+
+                <!-- Icon -->
+                <div class="h-8 w-8 flex items-center justify-center rounded-full bg-indigo-100">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-5 w-5 text-indigo-500"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M13 11L21 3M21 3h-6M21 3v6M8 7H6a2 2 0 00-2 2v9
+                             a2 2 0 002 2h9a2 2 0 002-2v-2" />
+                    </svg>
+                </div>
+
+                <!-- Text -->
+                <span class="font-semibold text-gray-800 text-xl">
+                    UrlOpener
+                </span>
             </div>
         </div>
     </header>
 
-    <!-- MAIN -->
-    <main class="max-w-4xl mx-auto px-6 py-12">
+
+
+
+    <!-- Main Content -->
+    <main class="flex-1 flex justify-center px-4 py-10">
         @RenderBody()
     </main>
 
-    <!-- FOOTER -->
-    <footer class="text-center text-gray-500 text-sm pb-6">
-        Note: You may need to allow pop-ups for this site in your browser settings.
-    </footer>
-
-    @RenderSection("Scripts", required: false)
 </body>
 </html>
