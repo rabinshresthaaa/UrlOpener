@@ -1,97 +1,242 @@
-﻿@{
-    ViewData["Title"] = "UrlOpener";
+@{
+    ViewData["Title"] = "Bulk Opener";
 }
 
-<div class="max-w-3xl w-full">
+<div class="max-w-3xl w-full flex flex-col gap-8">
 
-    <div class="bg-white rounded-2xl shadow-sm border p-10">
+    <!-- Main Card -->
+    <div class="glass rounded-3xl p-8 sm:p-10 relative overflow-hidden group">
+        <!-- Subtle gradient overlay on hover -->
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
 
         <!-- Title -->
-        <h1 class="text-3xl font-semibold text-center text-gray-900">
-            Open URLs with Delay
-        </h1>
-
-        <p class="text-center mt-2 text-gray-500">
-            Paste your URLs below and open them automatically with a configurable timed delay.
-        </p>
-
+        <div class="text-center mb-8 relative z-10">
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-3">
+                Bulk Open URLs
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
+                Paste your links below to open them in new tabs automatically. 
+                Configure a delay to prevent your browser from being overwhelmed.
+            </p>
+        </div>
 
         <!-- FORM -->
-        <form class="mt-8 space-y-6" onsubmit="startOpening(event)">
+        <form class="space-y-8 relative z-10" onsubmit="startOpening(event)">
 
             <!-- Textarea -->
-            <div>
-                <label class="text-sm font-medium text-gray-700">
-                    Paste URLs
-                    <span class="text-gray-400 text-xs">(one per line)</span>
-                </label>
-
-                <textarea id="urls"
-                          rows="7"
-                          class="mt-2 w-full rounded-xl border px-4 py-3 text-gray-700 focus:ring-2 focus:ring-indigo-300 outline-none"
-                          placeholder="google.com&#10;youtube.com&#10;example.org"></textarea>
-            </div>
-
-
-            <!-- Delay -->
-            <div class="bg-gray-50 border rounded-xl p-5 flex items-center justify-between">
-
-                <div>
-                    <div class="font-medium text-gray-800">
-                        Delay Duration
-                    </div>
-                    <div class="text-sm text-gray-500">
-                        Seconds between opening each tab
-                    </div>
+            <div class="space-y-2 relative">
+                <div class="flex items-center justify-between">
+                    <label for="urls" class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                        <i class="ph ph-link text-brand-500"></i> URLs to Open
+                    </label>
+                    <span id="url-count" class="text-xs font-medium text-brand-600 dark:text-brand-400 bg-brand-100 dark:bg-brand-900/50 px-2 py-1 rounded-full">
+                        0 URLs
+                    </span>
                 </div>
 
-                <input id="delay"
-                       type="number"
-                       value="1"
-                       min="0"
-                       class="w-20 text-center border rounded-xl py-2 focus:ring-2 focus:ring-indigo-300 outline-none" />
+                <div class="relative group/textarea">
+                    <textarea id="urls"
+                              rows="6"
+                              class="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 px-5 py-4 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-300 shadow-sm placeholder:text-slate-400 resize-y backdrop-blur-sm custom-scrollbar"
+                              placeholder="https://google.com&#10;https://youtube.com&#10;example.org"></textarea>
+                </div>
             </div>
 
+            <!-- Delay -->
+            <div class="bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl p-6 transition-all duration-300 hover:shadow-md">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                            <i class="ph ph-clock text-purple-500"></i> Interval Delay
+                        </div>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            Time to wait between opening each tab
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 w-full sm:w-auto">
+                        <input type="range" id="delay-slider" min="0" max="10" step="0.5" value="1" class="w-full sm:w-32 accent-brand-500 cursor-pointer">
+                        <div class="relative">
+                            <input id="delay"
+                                   type="number"
+                                   value="1"
+                                   min="0"
+                                   step="0.1"
+                                   class="w-20 text-center font-medium bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2 pl-3 pr-8 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all shadow-sm text-slate-800 dark:text-slate-200" />
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium pointer-events-none">s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Button -->
             <button type="submit"
-                    class="w-full bg-indigo-400 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-sm transition">
-                Start Opening
+                    id="submit-btn"
+                    class="group relative w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl text-white font-bold text-lg bg-gradient-to-r from-brand-500 to-purple-600 hover:from-brand-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 shadow-xl shadow-brand-500/30 transform transition-all duration-300 hover:-translate-y-1 active:translate-y-0 overflow-hidden">
+                <div class="absolute inset-0 w-full h-full bg-white/20 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></div>
+                <span class="relative flex items-center gap-2" id="btn-text">
+                    <i class="ph ph-rocket-launch text-xl"></i> Start Opening
+                </span>
+                
+                <!-- Loading State (hidden by default) -->
+                <span class="absolute inset-0 flex items-center justify-center gap-2 opacity-0 transform translate-y-4 transition-all duration-300" id="btn-loading">
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Opening URLs...
+                </span>
             </button>
 
         </form>
-
+    </div>
+    
+    <!-- Progress Area -->
+    <div id="progress-container" class="hidden glass rounded-3xl p-6 sm:p-8 animate-slideUp">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-slate-800 dark:text-slate-200">Execution Status</h3>
+            <span id="progress-text" class="text-sm font-medium text-brand-600 dark:text-brand-400">0 / 0</span>
+        </div>
+        
+        <!-- Progress bar -->
+        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-6 overflow-hidden shadow-inner">
+            <div id="progress-bar" class="bg-gradient-to-r from-brand-500 to-purple-600 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+        </div>
+        
+        <!-- Logs -->
+        <div class="bg-slate-900 rounded-xl p-4 h-48 overflow-y-auto custom-scrollbar border border-slate-800 shadow-inner">
+            <ul id="log-list" class="space-y-2 text-sm font-mono">
+                <!-- Logs will be inserted here -->
+            </ul>
+        </div>
     </div>
 
-
     <!-- Footer Notice -->
-    <div class="text-center text-gray-500 text-sm mt-6">
-        ⚠ You may need to allow pop-ups for this website in your browser settings.
+    <div class="flex items-start justify-center gap-2 text-center text-slate-500 dark:text-slate-400 text-sm bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 py-3 px-4 rounded-xl border border-amber-200 dark:border-amber-800/30">
+        <i class="ph ph-warning-circle text-lg shrink-0 mt-0.5"></i>
+        <p>Make sure to <strong>allow pop-ups</strong> for this website in your browser settings before starting.</p>
     </div>
 
 </div>
 
-
 <script>
+    // Keep reference to standard elements
+    const urlsTextarea = document.getElementById("urls");
+    const urlCountEl = document.getElementById("url-count");
+    const delayInput = document.getElementById("delay");
+    const delaySlider = document.getElementById("delay-slider");
+    
+    // UI Elements for progress
+    const submitBtn = document.getElementById("submit-btn");
+    const btnText = document.getElementById("btn-text");
+    const btnLoading = document.getElementById("btn-loading");
+    const progressContainer = document.getElementById("progress-container");
+    const progressText = document.getElementById("progress-text");
+    const progressBar = document.getElementById("progress-bar");
+    const logList = document.getElementById("log-list");
+
+    // Sync slider and number input
+    delayInput.addEventListener('input', (e) => {
+        delaySlider.value = e.target.value;
+    });
+    
+    delaySlider.addEventListener('input', (e) => {
+        delayInput.value = e.target.value;
+    });
+
+    // Update URL count
+    urlsTextarea.addEventListener('input', updateCount);
+    
+    function updateCount() {
+        const val = urlsTextarea.value.trim();
+        if (!val) {
+            urlCountEl.textContent = '0 URLs';
+            return;
+        }
+        const count = val.split("\n").map(x => x.trim()).filter(x => x.length > 0).length;
+        urlCountEl.textContent = `${count} URL${count !== 1 ? 's' : ''}`;
+    }
+
+    // Initialize count
+    updateCount();
+
+    function addLog(url, status, iconStr, colorClass) {
+        const li = document.createElement('li');
+        li.className = "flex items-center gap-2 animate-fade";
+        li.innerHTML = `
+            <span class="${colorClass}">${iconStr}</span>
+            <span class="text-slate-300 truncate" title="${url}">${url}</span>
+            <span class="ml-auto text-xs ${colorClass} font-semibold uppercase tracking-wider">${status}</span>
+        `;
+        logList.appendChild(li);
+        
+        // Auto scroll to bottom
+        logList.parentElement.scrollTop = logList.parentElement.scrollHeight;
+    }
+
     async function startOpening(e) {
         e.preventDefault();
 
-        const urls = document.getElementById("urls")
-            .value.split("\n")
+        const rawUrls = urlsTextarea.value.split("\n")
             .map(x => x.trim())
             .filter(x => x.length > 0);
 
-        let delay = parseFloat(document.getElementById("delay").value) * 1000;
+        if (rawUrls.length === 0) return;
 
-        for (let url of urls) {
+        let delay = parseFloat(delayInput.value) * 1000;
+        
+        // Update UI state to loading
+        submitBtn.disabled = true;
+        btnText.classList.add('opacity-0', '-translate-y-4');
+        btnLoading.classList.remove('opacity-0', 'translate-y-4');
+        btnLoading.classList.add('opacity-100', 'translate-y-0');
+        
+        progressContainer.classList.remove('hidden');
+        logList.innerHTML = '';
+        
+        addLog('System', 'STARTED', '<i class="ph-fill ph-info"></i>', 'text-blue-400');
 
-            if (!url.startsWith("http"))
+        let openedCount = 0;
+        const total = rawUrls.length;
+
+        for (let i = 0; i < total; i++) {
+            let url = rawUrls[i];
+            
+            if (!url.startsWith("http")) {
                 url = "https://" + url;
+            }
+                
+            // Update progress text
+            progressText.textContent = `${openedCount} / ${total}`;
+            progressBar.style.width = `${(openedCount / total) * 100}%`;
 
-            window.open(url, "_blank");
+            // Open URL
+            try {
+                window.open(url, "_blank");
+                addLog(url, 'OPENED', '<i class="ph-fill ph-check-circle"></i>', 'text-emerald-400');
+            } catch (err) {
+                addLog(url, 'FAILED', '<i class="ph-fill ph-x-circle"></i>', 'text-red-400');
+            }
+            
+            openedCount++;
+            
+            // Update progress text after opening
+            progressText.textContent = `${openedCount} / ${total}`;
+            progressBar.style.width = `${(openedCount / total) * 100}%`;
 
-            if (delay > 0)
+            // Wait if there's a delay and it's not the last URL
+            if (delay > 0 && i < total - 1) {
+                addLog(`Waiting ${delayInput.value}s...`, 'WAIT', '<i class="ph-fill ph-clock"></i>', 'text-amber-400');
                 await new Promise(r => setTimeout(r, delay));
+            }
         }
+        
+        addLog('System', 'COMPLETED', '<i class="ph-fill ph-flag-checkered"></i>', 'text-brand-400');
+
+        // Reset UI state
+        submitBtn.disabled = false;
+        btnText.classList.remove('opacity-0', '-translate-y-4');
+        btnLoading.classList.remove('opacity-100', 'translate-y-0');
+        btnLoading.classList.add('opacity-0', 'translate-y-4');
     }
 </script>
